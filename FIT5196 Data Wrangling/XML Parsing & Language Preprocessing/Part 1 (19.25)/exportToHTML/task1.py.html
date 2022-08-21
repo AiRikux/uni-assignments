@@ -1,0 +1,183 @@
+<html>
+<head>
+<title>task1.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+task1.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">os</span>
+<span class="s0">import </span><span class="s1">re</span>
+<span class="s0">import </span><span class="s1">langid</span>
+
+<span class="s1">directory = </span><span class="s2">'./part1'</span>
+
+<span class="s1">pattern1 = </span><span class="s2">&quot;(?:{</span><span class="s0">\&quot;</span><span class="s2">text</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;text&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">created_at</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;date&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">id</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;id&gt;\d{19})(?:</span><span class="s0">\&quot;</span><span class="s2">})&quot;</span>
+<span class="s1">pattern2 = </span><span class="s2">&quot;(?:{</span><span class="s0">\&quot;</span><span class="s2">text</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;text&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">id</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;id&gt;\d{19})(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">created_at</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;date&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">})&quot;</span>
+<span class="s1">pattern3 = </span><span class="s2">&quot;(?:{</span><span class="s0">\&quot;</span><span class="s2">id</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;id&gt;\d{19})(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">text</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;text&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">created_at</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;date&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">})&quot;</span>
+<span class="s1">pattern4 = </span><span class="s2">&quot;(?:{</span><span class="s0">\&quot;</span><span class="s2">id</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;id&gt;\d{19})(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">created_at</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;date&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">text</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;text&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">})&quot;</span>
+<span class="s1">pattern5 = </span><span class="s2">&quot;(?:{</span><span class="s0">\&quot;</span><span class="s2">created_at</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;date&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">id</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;id&gt;\d{19})(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">text</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;text&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">})&quot;</span>
+<span class="s1">pattern6 = </span><span class="s2">&quot;(?:{</span><span class="s0">\&quot;</span><span class="s2">created_at</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;date&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">text</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;text&gt;.*?)(?:</span><span class="s0">\&quot;</span><span class="s2">,)(?:</span><span class="s0">\&quot;</span><span class="s2">id</span><span class="s0">\&quot;</span><span class="s2">:</span><span class="s0">\&quot;</span><span class="s2">)(?P&lt;id&gt;\d{19})(?:</span><span class="s0">\&quot;</span><span class="s2">})&quot;</span>
+
+<span class="s1">ids = []</span>
+<span class="s1">lang = [</span><span class="s2">'en'</span><span class="s1">]</span>
+
+<span class="s3"># overwrite files if any exist</span>
+<span class="s3"># create files is any exist</span>
+<span class="s1">out = open(</span><span class="s2">&quot;31282016.xml&quot;</span><span class="s0">, </span><span class="s2">'w'</span><span class="s1">)</span>
+<span class="s1">out.write(</span><span class="s2">&quot;&lt;?xml version=</span><span class="s0">\&quot;</span><span class="s2">1.0</span><span class="s0">\&quot; </span><span class="s2">encoding=</span><span class="s0">\&quot;</span><span class="s2">UTF-8</span><span class="s0">\&quot;</span><span class="s2">?&gt;&quot;</span><span class="s1">)</span>
+<span class="s1">out.write(</span><span class="s2">'</span><span class="s0">\n</span><span class="s2">'</span><span class="s1">)</span>
+<span class="s1">out.close()</span>
+
+<span class="s1">out = open(</span><span class="s2">&quot;31282016.xml&quot;</span><span class="s0">, </span><span class="s2">&quot;a&quot;</span><span class="s1">)</span>
+<span class="s1">out.write(</span><span class="s2">&quot;&lt;data&gt;&quot;</span><span class="s1">)</span>
+<span class="s1">out.write(</span><span class="s2">'</span><span class="s0">\n</span><span class="s2">'</span><span class="s1">)</span>
+
+<span class="s1">dates = []</span>
+<span class="s1">text = {}</span>
+
+<span class="s0">def </span><span class="s1">tweet(idp</span><span class="s0">, </span><span class="s1">t):</span>
+	<span class="s1">tweet = </span><span class="s2">&quot;&lt;tweet id=</span><span class="s0">\&quot;</span><span class="s2">{i}</span><span class="s0">\&quot;</span><span class="s2">&gt;{txt}&lt;/tweet&gt;&quot;</span><span class="s1">.format(i=idp</span><span class="s0">, </span><span class="s1">txt=t)</span>
+	<span class="s0">return </span><span class="s1">tweet</span>
+
+
+<span class="s0">for </span><span class="s1">filename </span><span class="s0">in </span><span class="s1">os.listdir(directory):</span>
+	<span class="s3"># ensure that file is .txt</span>
+	<span class="s3"># http://carrefax.com/new-blog/2017/1/16/draft</span>
+	<span class="s0">if </span><span class="s1">filename.endswith(</span><span class="s2">&quot;.txt&quot;</span><span class="s1">) :</span>
+		<span class="s1">f = open(directory + </span><span class="s2">&quot;/&quot; </span><span class="s1">+ filename</span><span class="s0">, </span><span class="s2">&quot;r&quot;</span><span class="s0">, </span><span class="s1">encoding=</span><span class="s2">&quot;UTF-8&quot;</span><span class="s1">)</span>
+		<span class="s1">lines = f.read()</span>
+		<span class="s1">pattern = (pattern1</span><span class="s0">, </span><span class="s1">pattern2</span><span class="s0">, </span><span class="s1">pattern3</span><span class="s0">, </span><span class="s1">pattern4</span><span class="s0">, </span><span class="s1">pattern5</span><span class="s0">, </span><span class="s1">pattern6)</span>
+
+		<span class="s3"># for each file we test pattern</span>
+		<span class="s0">for </span><span class="s1">p </span><span class="s0">in </span><span class="s1">pattern:</span>
+			<span class="s1">m = re.finditer(p</span><span class="s0">, </span><span class="s1">lines)</span>
+
+			<span class="s3"># check all pattern found</span>
+			<span class="s0">for </span><span class="s1">n </span><span class="s0">in </span><span class="s1">m:</span>
+				<span class="s3"># print(n.groupdict())</span>
+
+				<span class="s3"># assuming that all dates in the correct format</span>
+				<span class="s1">date = n[</span><span class="s2">'date'</span><span class="s1">][:</span><span class="s4">10</span><span class="s1">]</span>
+				<span class="s1">t = n[</span><span class="s2">'text'</span><span class="s1">]</span>
+				<span class="s1">idp = n[</span><span class="s2">'id'</span><span class="s1">]</span>
+
+				<span class="s3"># print(t)</span>
+
+				<span class="s3"># check if id is duplicate</span>
+				<span class="s0">if </span><span class="s1">len(ids) == </span><span class="s4">0</span><span class="s1">:</span>
+					<span class="s0">pass</span>
+
+				<span class="s0">else</span><span class="s1">:</span>
+					<span class="s0">for </span><span class="s1">x </span><span class="s0">in </span><span class="s1">ids:</span>
+						<span class="s0">if </span><span class="s1">idp == x:</span>
+							<span class="s1">id_check = </span><span class="s0">False</span>
+							<span class="s0">break</span>
+						<span class="s0">else</span><span class="s1">:</span>
+							<span class="s1">id_check = </span><span class="s0">True</span>
+
+					<span class="s0">if </span><span class="s1">id_check </span><span class="s0">is True</span><span class="s1">:</span>
+						<span class="s0">pass</span>
+
+					<span class="s0">else</span><span class="s1">:</span>
+						<span class="s0">continue</span>
+
+				<span class="s3"># replace new line accordingly</span>
+				<span class="s1">t = t.replace(</span><span class="s2">'</span><span class="s0">\\</span><span class="s2">n'</span><span class="s0">, </span><span class="s2">'</span><span class="s0">\n</span><span class="s2">'</span><span class="s1">)</span>
+				<span class="s1">t = t.replace(</span><span class="s2">'</span><span class="s0">\\</span><span class="s2">r'</span><span class="s0">, </span><span class="s2">'</span><span class="s0">\r</span><span class="s2">'</span><span class="s1">)</span>
+				<span class="s1">t = t.replace(</span><span class="s2">'</span><span class="s0">\\\\</span><span class="s2">'</span><span class="s0">, </span><span class="s2">'</span><span class="s0">\\</span><span class="s2">'</span><span class="s1">)</span>
+
+				<span class="s3"># replace many backlashes with just two</span>
+				<span class="s3">#b = re.finditer(&quot;\\+&quot;, t)</span>
+				<span class="s3">#for a in b:</span>
+				<span class="s3">#   print(a.group())</span>
+
+				<span class="s3"># replace necessary values with xml values</span>
+				<span class="s1">t = t.replace(</span><span class="s2">'&amp;'</span><span class="s0">, </span><span class="s2">'&amp;amp;'</span><span class="s1">)</span>
+				<span class="s1">t = t.replace(</span><span class="s2">'&lt;'</span><span class="s0">, </span><span class="s2">'&amp;lt;'</span><span class="s1">)</span>
+				<span class="s1">t = t.replace(</span><span class="s2">'&gt;'</span><span class="s0">, </span><span class="s2">'&amp;gt;'</span><span class="s1">)</span>
+				<span class="s1">t = t.replace(</span><span class="s2">r'\&quot;'</span><span class="s0">, </span><span class="s2">'&amp;quot;'</span><span class="s1">)</span>
+				<span class="s1">t = t.replace(</span><span class="s2">r&quot;'&quot;</span><span class="s0">, </span><span class="s2">&quot;&amp;apos;&quot;</span><span class="s1">)</span>
+
+				<span class="s3"># marking for emoji</span>
+				<span class="s1">t = t.replace(</span><span class="s2">&quot;</span><span class="s0">\\</span><span class="s2">uD83D&quot;</span><span class="s0">, </span><span class="s2">&quot;</span><span class="s0">\\\\</span><span class="s2">uD83D&quot;</span><span class="s1">)</span>
+
+				<span class="s3"># make characters</span>
+				<span class="s3">#r = re.finditer(r&quot;(?:.?)(\\u\w{4})+&quot;, t)</span>
+				<span class="s1">r = re.finditer(</span><span class="s2">&quot;(</span><span class="s0">\\\\</span><span class="s2">uD83D)(</span><span class="s0">\\\\</span><span class="s2">u\w{4})+&quot;</span><span class="s0">, </span><span class="s1">t)</span>
+				<span class="s0">if </span><span class="s1">r == </span><span class="s0">None</span><span class="s1">:</span>
+					<span class="s0">pass</span>
+				<span class="s0">else</span><span class="s1">:</span>
+					<span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">r:</span>
+						<span class="s3">#print(i.group())</span>
+						<span class="s1">u = i.group()</span>
+						<span class="s1">u = u.encode().decode(</span><span class="s2">&quot;unicode_escape&quot;</span><span class="s1">).encode(</span><span class="s2">'utf-16'</span><span class="s0">, </span><span class="s2">'surrogatepass'</span><span class="s1">).decode(</span><span class="s2">&quot;utf-16&quot;</span><span class="s1">)</span>
+						<span class="s3">#u = u.lower()</span>
+						<span class="s3">#print(u)</span>
+						<span class="s1">t = t.replace(str(i.group())</span><span class="s0">, </span><span class="s1">u)</span>
+
+				<span class="s3"># replace marking</span>
+				<span class="s1">t = t.replace(</span><span class="s2">'</span><span class="s0">\\</span><span class="s2">'</span><span class="s0">, </span><span class="s2">''</span><span class="s1">)</span>
+
+				<span class="s3"># check language</span>
+				<span class="s1">lang_check = </span><span class="s0">False</span>
+				<span class="s0">for </span><span class="s1">l </span><span class="s0">in </span><span class="s1">lang:</span>
+					<span class="s1">text_lang = langid.classify(t)[</span><span class="s4">0</span><span class="s1">]</span>
+					<span class="s0">if </span><span class="s1">text_lang == l:</span>
+						<span class="s1">lang_check = </span><span class="s0">True</span>
+						<span class="s0">break</span>
+
+					<span class="s0">else</span><span class="s1">:</span>
+						<span class="s1">lang_check = </span><span class="s0">False</span>
+
+				<span class="s0">if </span><span class="s1">lang_check </span><span class="s0">is True</span><span class="s1">:</span>
+					<span class="s0">pass</span>
+
+				<span class="s0">else</span><span class="s1">:</span>
+					<span class="s0">continue</span>
+
+				<span class="s1">ids.append(idp)</span>
+				<span class="s1">dates.append(date)</span>
+
+				<span class="s3">#t = t.encode('utf-16', 'surrogatepass').decode(&quot;utf-16&quot;)</span>
+				<span class="s3">#print(t)</span>
+
+				<span class="s3"># append tweet to dictionary list</span>
+				<span class="s0">if </span><span class="s1">text.get(date</span><span class="s0">, False</span><span class="s1">):</span>
+					<span class="s1">text[date].append(tweet(idp</span><span class="s0">, </span><span class="s1">t))</span>
+
+				<span class="s0">else</span><span class="s1">:</span>
+					<span class="s1">text[date] = []</span>
+					<span class="s1">text[date].append(tweet(idp</span><span class="s0">, </span><span class="s1">t))</span>
+
+				<span class="s3">#print(&quot;--------------------------------------&quot;)</span>
+
+			<span class="s0">continue</span>
+		<span class="s0">else</span><span class="s1">:</span>
+			<span class="s0">continue</span>
+
+<span class="s3"># make sure dates value doesnt repeat</span>
+<span class="s1">dates = set(dates)</span>
+<span class="s0">for </span><span class="s1">d </span><span class="s0">in </span><span class="s1">dates:</span>
+	<span class="s1">out.write(</span><span class="s2">&quot;&lt;tweets date=</span><span class="s0">\&quot;</span><span class="s2">{dd}</span><span class="s0">\&quot;</span><span class="s2">&gt;&quot;</span><span class="s1">.format(dd=d))</span>
+	<span class="s1">out.write(</span><span class="s2">'</span><span class="s0">\n</span><span class="s2">'</span><span class="s1">)</span>
+	<span class="s0">for </span><span class="s1">tt </span><span class="s0">in </span><span class="s1">text[d]:</span>
+		<span class="s1">out.write(tt)</span>
+		<span class="s1">out.write(</span><span class="s2">'</span><span class="s0">\n</span><span class="s2">'</span><span class="s1">)</span>
+	<span class="s1">out.write(</span><span class="s2">&quot;&lt;/tweets&gt;&quot;</span><span class="s1">)</span>
+	<span class="s1">out.write(</span><span class="s2">'</span><span class="s0">\n</span><span class="s2">'</span><span class="s1">)</span>
+<span class="s1">out.write(</span><span class="s2">&quot;&lt;/data&gt;&quot;</span><span class="s1">)</span>
+<span class="s1">out.close()</span>
+</pre>
+</body>
+</html>
